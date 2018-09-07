@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { FormLabel } from 'react-native-elements';
 import TextInputField from './components/TextInputField';
+import axios from 'axios';
 
 class App extends React.Component {
 
@@ -26,29 +27,23 @@ class App extends React.Component {
     this.setState(c);
    }
 
-   onButtonClick = () => {
-    fetch('https://6121502966.startcon.com/api/v1/login', {
+  onButtonClick = () => {
+    axios({
       method: 'POST',
+      url: 'https://6121502966.startcon.com/api/v1/login',
+      timeout: 3000,
+      data: {
+        email: this.state.email,
+        password: this.state.password,
+      },
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(
-        {
-          email: 'yourValue',
-          password: 'yourOtherValue',
-        }
-      ),
-    })
-    .then( (response) => {
-      if(response.status == 200){
-        this.setState({success: true, error: ''});
-      }
-      else{
-        this.setState({error: response.status,success: false});
+        'Content-Info': 'application/json',
+        'Access-Control-Allow-Origin': '*',
       }
     })
-    .catch( (error) => console.log(error) );
+    .then( result => this.setState({success: true, error: ''}) )
+    .catch( error => this.setState({success: false, error: error.response.status}));
   }
 
   render() {
