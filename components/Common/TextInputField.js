@@ -1,5 +1,6 @@
 import React from 'react';
-import { FormInput, FormValidationMessage } from 'react-native-elements';
+import { FormValidationMessage } from 'react-native-elements';
+import { TextInput } from 'react-native';
 
 class TextInputField extends React.Component {
 
@@ -10,7 +11,7 @@ class TextInputField extends React.Component {
 	render() {
 	    return (
 	     	<React.Fragment>
-	     		<FormInput onChangeText={this.onChange}/>
+	     		<TextInput onChangeText={this.onChange} {...this.props.others}/>
 	     		{ this.props.error && <FormValidationMessage>{this.props.error}</FormValidationMessage>}
 	     	</React.Fragment>
 	    );
