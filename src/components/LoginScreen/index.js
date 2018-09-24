@@ -9,18 +9,26 @@ import {
 import { FormLabel } from 'react-native-elements';
 import TextInputField from '../Common/TextInputField';
 import axios from 'axios';
+import { connect } from 'react-redux';
+import {
+  login
+} from '../../actions/LoginActions';
+
 
 class App extends React.Component {
 
-  constructor(){
-    super();
+  constructor(props){
+    super(props);
     this.state = {
       email: '',
-      error: '',
-      loading: false,
       password: '',
-      success: false,
     };
+  }
+
+  componentDidUpdate(prevProps){
+    if(this.props.loginStatus.accessToken){
+      this.props.navigation.navigate('Tickets');
+    }
   }
 
   onInputChange = (key, input) => {
@@ -30,23 +38,7 @@ class App extends React.Component {
    }
 
   onButtonClick = () => {
-    this.setState({loading: true});
-    axios({
-      method: 'POST',
-      url: 'https://6121502966.startcon.com/api/v1/login',
-      timeout: 3000,
-      data: {
-        email: this.state.email,
-        password: this.state.password,
-      },
-      headers: {
-        Accept: 'application/json',
-        'Content-Info': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      }
-    })
-    .then( result => this.setState({loading: false, success: true, error: ''}) )
-    .catch( error => this.setState({loading: false, success: false, error: error.response.status}));
+    this.props.login(this.state);
   }
 
   render() {
@@ -73,7 +65,7 @@ class App extends React.Component {
         />
         <View style={styles.indication}>
         {
-          this.state.loading ? 
+          this.props.loginStatus.loading ? 
           <ActivityIndicator size="small" color="#992323" />
           :
           <Button 
@@ -84,10 +76,10 @@ class App extends React.Component {
         }
         </View>
         {
-          this.state.success && <Text style={styles.message}>LOGGED IN SUCCESSFULLY!!</Text>
+          this.props.loginStatus.success && <Text style={styles.message}>LOGGED IN SUCCESSFULLY!!</Text>
         }
         {
-          this.state.error.length !== 0 && <Text style={styles.message}>EXITED WITH STATUS CODE: {this.state.error}</Text>
+          this.props.loginStatus.error && <Text style={styles.message}>{this.props.loginStatus.error}</Text>
         }
       </View>
     );
@@ -121,4 +113,21 @@ export const styles = StyleSheet.create({
   }
 });
 
-export default App;
+function mapStateToProps(state){
+  return {
+    loginStatus : state.login,
+  }; 
+}
+
+function mapDispatchToProps(dispatch){
+  return {
+    login: (data) => { 
+      login(data, dispatch);
+    },
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);

@@ -1,26 +1,19 @@
 import React from 'react';
-import { 
-  Button,
-  StyleSheet, 
-  Text,
-  View,
-  ActivityIndicator,
-} from 'react-native';
+import AppNavigation from './src/routes';
+import rootReducer from './src/reducers';
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import promise from 'redux-promise';
 
-import { createStackNavigator } from 'react-navigation';
-import LoginScreen from './components/LoginScreen';
+const store = createStore(rootReducer, applyMiddleware(promise, thunk));
 
-const RootStack = createStackNavigator({
-  Login: {
-    screen: LoginScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-});
-
-export default class App extends React.Component {
-  render() {
-    return <RootStack />;
-  }
+const App = () => {
+  return (
+    <Provider store={store}>
+      <AppNavigation />
+    </Provider>
+  );
 }
+
+export default App;
